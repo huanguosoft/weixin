@@ -5,6 +5,7 @@ class Msg
 {
     public static function requestMsg($postData)
     {
+        //
         return true;
     }
 
