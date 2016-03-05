@@ -1,0 +1,24 @@
+{
+    "name": "agile/weixin",
+    "type": "library",
+    "description": "AgileWeixin is weixin development package",
+    "keywords": ["domain", "agile", "weixin"],
+    "license": "Apache-2.0",
+    "homepage": "http://www.huanguosoft.com",
+    "authors": [
+        {
+            "name": "Andy",
+            "email": "php360@qq.com",
+            "homepage": "http://www.moqifei.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Agile\\Weixin\\": "src/"
+        }
+    }
+}
