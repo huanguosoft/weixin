@@ -11,6 +11,13 @@ class Weixin
     private $token;
 
     /**
+     * 微信发送的消息保存
+     *
+     * @var array
+     */
+    private $data;
+
+    /**
      * AppID
      *
      * @var string
@@ -45,6 +52,7 @@ class Weixin
 
     /**
      * 开发者模式开启
+     *
      * @return $this
      */
     public function debug()
@@ -54,10 +62,13 @@ class Weixin
         return $this;
     }
 
-    public static function run()
+    /**
+     * @return bool
+     */
+    public function run()
     {
         // 验证服务器
-        self::checkSignature();
+        $this->checkSignature();
 
         $postData = file_get_contents("php://input");
         libxml_disable_entity_loader(true);
@@ -67,7 +78,7 @@ class Weixin
             return false;
         }
 
-        return Msg::requestMsg($postData);
+        return $postData;
     }
 
 
