@@ -1,4 +1,12 @@
 <?php
+/**
+ * 与微信服务器交互模块
+ *
+ * @author    李扬(Andy) <php360@qq.com>
+ * @link      技安后院 http://www.moqifei.com
+ * @copyright 苏州幻果软件有限公司 http://www.huanguosoft.com
+ * @listen    http://www.apache.org/licenses/LICENSE-2.0
+ */
 namespace Agile\Weixin;
 
 class Weixin
@@ -8,79 +16,49 @@ class Weixin
      *
      * @var string
      */
-    private $token;
+    private $token = '';
 
     /**
-     * 微信发送的消息保存
+     * 设置token
      *
-     * @var array
-     */
-    private $data;
-
-    /**
-     * AppID
-     *
-     * @var string
-     */
-    private $appId = '';
-
-    /**
-     * AppSecret
-     *
-     * @var string
-     */
-    private $appSecret = '';
-
-    /**
-     * EncodingAESKey,消息加解密密钥
-     *
-     * @var string
-     */
-    private $encodingAESKey = '';
-
-    /**
-     * 开发者模式
-     *
-     * @var bool
-     */
-    private $debug = false;
-
-    public function __construct($token)
-    {
-        $this->token = $token;
-    }
-
-    /**
-     * 开发者模式开启
-     *
+     * @param string $token Token值
      * @return $this
      */
-    public function debug()
+    public function token($token)
     {
-        $this->debug = true;
+        $this->token = $token;
 
         return $this;
     }
 
     /**
-     * @return bool
+     * 接收POST消息
+     *
+     * @return array|bool
      */
     public function run()
     {
+        if (empty($this->token)) {
+            return false;
+        }
+
         // 验证服务器
         $this->checkSignature();
 
-        $postData = file_get_contents("php://input");
+        // 接收post消息
         libxml_disable_entity_loader(true);
-        $postData = simplexml_load_string($postData, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $postData = (array) simplexml_load_string(
+            file_get_contents("php://input"),
+            'SimpleXMLElement',
+            LIBXML_NOCDATA
+        );
 
-        if ($postData === false) {
+        if (empty($postData)) {
             return false;
         }
 
         return $postData;
     }
-
 
     /**
      * 检验signature
@@ -97,10 +75,11 @@ class Weixin
             $tmpStr = implode($tmpArr);
             $tmpStr = sha1($tmpStr);
 
-            if($tmpStr == $signature ){
+            if ($tmpStr == $signature) {
                 echo $_GET['echostr'];
                 exit();
             }
         }
     }
+
 }
