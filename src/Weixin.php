@@ -5,7 +5,7 @@
  * @author    李扬(Andy) <php360@qq.com>
  * @link      技安后院 http://www.moqifei.com
  * @copyright 苏州幻果软件有限公司 http://www.huanguosoft.com
- * @listen    http://www.apache.org/licenses/LICENSE-2.0
+ * @license   http://www.apache.org/licenses/LICENSE-2.0
  */
 namespace Agile\Weixin;
 
@@ -32,9 +32,9 @@ class Weixin
     }
 
     /**
-     * 接收POST消息
+     * 验证服务器，接收POST消息
      *
-     * @return array|bool
+     * @return array
      */
     public function run()
     {
