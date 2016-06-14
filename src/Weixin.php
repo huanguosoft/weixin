@@ -77,7 +77,7 @@ class Weixin
 
             if ($tmpStr == $signature) {
                 echo $_GET['echostr'];
-                exit();
+                die();
             }
         }
     }
