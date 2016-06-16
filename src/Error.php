@@ -16,7 +16,7 @@ class Error
      *
      * @var array
      */
-    private $error;
+    private $error = [];
 
     public function __construct()
     {
