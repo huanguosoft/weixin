@@ -26,6 +26,13 @@ class Response
     private $news = [];
 
     /**
+     * 图文最大数量
+     *
+     * @var int
+     */
+    private $newsMaxNum = 10;
+
+    /**
      * 初始化时间
      *
      * Response constructor.
@@ -170,10 +177,16 @@ class Response
         return sprintf($tpl, $fromUserName, $toUserName, $this->time, $title, $description, $musicUrl, $hqMusicUrl, $thumbMediaId, $funcFlag);
     }
 
+    /**
+     * 回复图文消息
+     *
+     * @param string $fromUserName 接收方帐号（收到的OpenID）
+     * @param string $toUserName 开发者微信号
+     * @return string
+     */
     public function news($fromUserName, $toUserName)
     {
-        $count = count($this->news);
-        if ($count > 0 && $count <= 10) {
+        if ($count = count($this->news)) {
             $articleItem = "<item>
                 <Title><![CDATA[%s]]></Title> 
                 <Description><![CDATA[%s]]></Description>
@@ -210,21 +223,42 @@ class Response
     /**
      * 组织图文数据数组
      *
-     * @param string $title
-     * @param string $description
-     * @param string $picUrl
-     * @param string $url
+     * @param string $title 标题
+     * @param string $description 说明
+     * @param string $picUrl 图片地址
+     * @param string $url 链接地址
      * @return $this
      */
     public function setNews($title, $description, $picUrl, $url)
     {
-        $this->news = array_merge($this->news, [
-            'title'     => $title,
-            'descript'  => $description,
-            'picUrl'    => $picUrl,
-            'url'       => $url,
-        ]);
+        if (count($this->news) <= $this->newsMaxNum) {
+            $this->news[] = [
+                'title'     => $title,
+                'descript'  => $description,
+                'picUrl'    => $picUrl,
+                'url'       => $url,
+            ];
+        }
 
         return $this;
+    }
+
+    /**
+     * 消息转发到多客服
+     *
+     * @param string $fromUserName 接收方帐号（收到的OpenID）
+     * @param string $toUserName 开发者微信号
+     * @return string
+     */
+    public function transferCustomerService($fromUserName, $toUserName)
+    {
+        $tpl = "<xml>
+            <ToUserName><![CDATA[%s]]></ToUserName>
+            <FromUserName><![CDATA[%s]]></FromUserName>
+            <CreateTime>%s</CreateTime>
+            <MsgType><![CDATA[transfer_customer_service]]></MsgType>
+        </xml>";
+
+        return sprintf($tpl, $fromUserName, $toUserName, $this->time);
     }
 }
