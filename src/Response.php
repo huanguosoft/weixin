@@ -7,6 +7,7 @@
  * @copyright 苏州幻果软件有限公司 http://www.huanguosoft.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
+
 namespace Agile\Weixin;
 
 class Response
