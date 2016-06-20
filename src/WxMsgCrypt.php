@@ -22,7 +22,7 @@ class WxMsgCrypt
     private $token;
 
     /**
-     * 加密码
+     * 加密秘钥
      * @var string
      */
     private $encodingAesKey;
@@ -89,6 +89,7 @@ class WxMsgCrypt
         //生成发送的xml
         $xmlparse = new XmlParse;
         $encryptMsg = $xmlparse->generate($encrypt, $signature, $timeStamp, $nonce);
+
         return ErrorCode::$OK;
     }
 
