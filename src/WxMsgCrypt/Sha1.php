@@ -11,6 +11,8 @@
 
 namespace Agile\Weixin\WxMsgCrypt;
 
+use Exception;
+
 class Sha1
 {
     /**
@@ -30,7 +32,7 @@ class Sha1
             $str = implode($array);
 
             return array(ErrorCode::$OK, sha1($str));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //print $e . "\n";
             return array(ErrorCode::$ComputeSignatureError, null);
         }
