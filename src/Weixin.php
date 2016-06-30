@@ -20,19 +20,6 @@ class Weixin
     private $token = '';
 
     /**
-     * 设置token
-     *
-     * @param string $token Token值
-     * @return $this
-     */
-    public function token($token)
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    /**
      * 验证服务器，接收POST消息
      *
      * @return array
@@ -61,6 +48,20 @@ class Weixin
         return $postData;
     }
 
+
+    /**
+     * 设置token
+     *
+     * @param string $token Token值
+     * @return $this
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
     /**
      * 检验signature
      */
@@ -82,5 +83,4 @@ class Weixin
             }
         }
     }
-
 }
