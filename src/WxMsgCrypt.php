@@ -1,9 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: hwache
- * Date: 2016/6/20
- * Time: 16:50
+ * 微信消息加解密
+ *
+ * @author 李扬(Andy) <php360@qq.com>
+ * @link 技安后院 http://www.moqifei.com
+ * @copyright 苏州幻果软件有限公司 http://www.huanguosoft.com
+ * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Agile\Weixin;
@@ -16,34 +18,104 @@ use Agile\Weixin\WxMsgCrypt\Prpcrypt;
 class WxMsgCrypt
 {
     /**
-     * token
+     * Token
+     *
      * @var string
      */
-    private $token;
+    private $token = '';
+
+    /**
+     * appid
+     *
+     * @var string
+     */
+    private $appId = '';
 
     /**
      * 加密秘钥
+     *
      * @var string
      */
-    private $encodingAesKey;
-
-    /**
-     * 公众号appid
-     * @var string
-     */
-    private $appId;
+    private $encodingAesKey = '';
 
     /**
      * 构造函数
-     * @param $token string 公众平台上，开发者设置的token
-     * @param $encodingAesKey string 公众平台上，开发者设置的EncodingAESKey
-     * @param $appId string 公众平台的appId
+     * @param string $token token
+     * @param string $appId appId
+     * @param string $encodingAesKey AES加密密钥
      */
-    public function __construct($token, $encodingAesKey, $appId)
+    public function __construct($token, $appId, $encodingAesKey)
     {
-        $this->token = $token;
+        $this->token          = $token;
+        $this->appId          = $appId;
         $this->encodingAesKey = $encodingAesKey;
-        $this->appId = $appId;
+    }
+
+    /**
+     * 加密数据信息
+     *
+     * @param string $data 未加密数据信息，XML数据
+     * @param array $postData POST数据
+     * @return int|string
+     */
+    public function encryptMsg($data, $postData)
+    {
+        // 加密数据
+        $encryptMsg = '';
+
+        // 加密数据
+        $errCode = $this->_encryptMsg(
+            $data,
+            $postData['timestamp'],
+            $postData['nonce'],
+            $encryptMsg
+        );
+
+        if ($errCode == 0) {
+            // 返回加密数据
+            return $encryptMsg;
+        }
+
+        return $errCode;
+    }
+
+    /**
+     * 解密数据
+     *
+     * @param string $encrypt 已加密的数据信息
+     * @param array $postData POST数据
+     * @return array|bool|int
+     */
+    public function decryptMsg($encrypt, $postData)
+    {
+        // 解密消息
+        $fromXml = sprintf(
+            "<xml><ToUserName><![CDATA[toUser]]></ToUserName><Encrypt><![CDATA[%s]]></Encrypt></xml>",
+            $encrypt
+        );
+
+        // 被解密消息
+        $decryptMsg = '';
+
+        // 被解密消息结果错误代码，为0表示无错误
+        $errCode = $this->_decryptMsg(
+            $postData['msg_signature'],
+            $postData['timestamp'],
+            $postData['nonce'],
+            $fromXml,
+            $decryptMsg
+        );
+
+        if ($errCode == 0) {
+            // 把解密的xml转换成数组
+            return (array) simplexml_load_string(
+                $decryptMsg,
+                'SimpleXMLElement',
+                LIBXML_NOCDATA
+            );
+        }
+
+        return $errCode;
     }
 
     /**
@@ -61,7 +133,7 @@ class WxMsgCrypt
      *
      * @return int 成功0，失败返回对应的错误码
      */
-    public function encryptMsg($replyMsg, $timeStamp, $nonce, &$encryptMsg)
+    private function _encryptMsg($replyMsg, $timeStamp, $nonce, &$encryptMsg)
     {
         $pc = new Prpcrypt($this->encodingAesKey);
 
@@ -110,7 +182,7 @@ class WxMsgCrypt
      *
      * @return int 成功0，失败返回对应的错误码
      */
-    public function decryptMsg($msgSignature, $timestamp = null, $nonce, $postData, &$msg)
+    private function _decryptMsg($msgSignature, $timestamp = null, $nonce, $postData, &$msg)
     {
         if (strlen($this->encodingAesKey) != 43) {
             return ErrorCode::$IllegalAesKey;
