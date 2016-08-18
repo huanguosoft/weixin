@@ -55,10 +55,11 @@ class WxMsgCrypt
      * 加密数据信息
      *
      * @param string $data 未加密数据信息，XML数据
-     * @param array $postData POST数据
+     * @param string $timestamp
+     * @param string $nonce
      * @return int|string
      */
-    public function encryptMsg($data, $postData)
+    public function encryptMsg($data, $timestamp, $nonce)
     {
         // 加密数据
         $encryptMsg = '';
@@ -66,8 +67,8 @@ class WxMsgCrypt
         // 加密数据
         $errCode = $this->_encryptMsg(
             $data,
-            $postData['timestamp'],
-            $postData['nonce'],
+            $timestamp,
+            $nonce,
             $encryptMsg
         );
 
@@ -83,10 +84,12 @@ class WxMsgCrypt
      * 解密数据
      *
      * @param string $encrypt 已加密的数据信息
-     * @param array $postData POST数据
+     * @param string $msgSignature 签名串，对应URL参数的msg_signature
+     * @param string $timestamp 时间戳 对应URL参数的timestamp
+     * @param string $nonce 随机串，对应URL参数的nonce
      * @return array|bool|int
      */
-    public function decryptMsg($encrypt, $postData)
+    public function decryptMsg($encrypt, $msgSignature, $timestamp, $nonce)
     {
         // 解密消息
         $fromXml = sprintf(
@@ -99,9 +102,9 @@ class WxMsgCrypt
 
         // 被解密消息结果错误代码，为0表示无错误
         $errCode = $this->_decryptMsg(
-            $postData['msg_signature'],
-            $postData['timestamp'],
-            $postData['nonce'],
+            $msgSignature,
+            $timestamp,
+            $nonce,
             $fromXml,
             $decryptMsg
         );
