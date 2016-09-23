@@ -55,8 +55,8 @@ class WxMsgCrypt
      * 加密数据信息
      *
      * @param string $data 未加密数据信息，XML数据
-     * @param string $timestamp
-     * @param string $nonce
+     * @param string $timestamp url中的时间戳
+     * @param string $nonce 随机数
      * @return int|string
      */
     public function encryptMsg($data, $timestamp, $nonce)
